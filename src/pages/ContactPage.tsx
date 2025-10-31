@@ -22,9 +22,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
 import { showLoading, showSuccess, showError } from "@/utils/toast";
 import { ArrowLeft } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useRef } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -36,6 +37,7 @@ const formSchema = z.object({
 });
 
 export function ContactPage() {
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,16 +52,39 @@ export function ContactPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const toastId = showLoading("Sending your message...");
 
-    const { error } = await supabase.functions.invoke("send-contact-email", {
-        body: values,
-    });
+    try {
+      // Get reCAPTCHA token
+      const recaptchaToken = await recaptchaRef.current?.executeAsync();
+      recaptchaRef.current?.reset();
 
-    if (error) {
-        showError("Failed to send message. Please try again.");
-        console.error("Error sending message:", error);
-    } else {
-        showSuccess("Message sent successfully! We'll be in touch soon.");
-        form.reset();
+      if (!recaptchaToken) {
+        showError("Please complete the reCAPTCHA verification.");
+        return;
+      }
+
+      // Send form data with reCAPTCHA token
+      const response = await fetch("/api/send-contact-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...values,
+          recaptchaToken,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      showSuccess("Message sent successfully! We'll be in touch soon.");
+      form.reset();
+    } catch (error) {
+      showError("Failed to send message. Please try again.");
+      console.error("Error sending message:", error);
     }
   }
 
@@ -185,6 +210,13 @@ export function ContactPage() {
                         </FormItem>
                         )}
                     />
+                    <div className="flex justify-center">
+                        <ReCAPTCHA
+                            ref={recaptchaRef}
+                            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
+                            size="invisible"
+                        />
+                    </div>
                     <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 text-white" size="lg">
                         Send Message
                     </Button>
