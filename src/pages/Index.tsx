@@ -16,10 +16,10 @@ const Index = () => {
             <a href="#services" className="text-gray-600 hover:text-blue-700 transition-colors">Services</a>
             <a href="#about" className="text-gray-600 hover:text-blue-700 transition-colors">About</a>
             <a href="#service-area" className="text-gray-600 hover:text-blue-700 transition-colors">Service Area</a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-700 transition-colors">Contact</a>
+            <Link to="/contact" className="text-gray-600 hover:text-blue-700 transition-colors">Contact</Link>
           </nav>
           <Button asChild className="hidden md:block bg-blue-700 hover:bg-blue-800 text-white">
-            <a href="mailto:phillip@kirknetllc.com">Get a Quote</a>
+            <Link to="/contact">Get a Quote</Link>
           </Button>
           {/* A mobile menu could be added here in the future if you'd like! */}
         </div>
@@ -37,7 +37,7 @@ const Index = () => {
               KirkNetworks provides expert IT consultation, custom software solutions, and comprehensive development services to help your business thrive.
             </p>
             <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg">
-              <a href="mailto:phillip@kirknetllc.com">Request a Free Consultation</a>
+              <Link to="/contact">Request a Free Consultation</Link>
             </Button>
           </div>
         </section>
@@ -160,9 +160,9 @@ const Index = () => {
                 <p className="mt-4 text-lg text-gray-600 mb-8">Let's talk about how we can help you achieve your goals.</p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg w-full sm:w-auto">
-                        <a href="mailto:phillip@kirknetllc.com">
-                            <Mail className="mr-2 h-5 w-5" /> Email Us
-                        </a>
+                        <Link to="/contact">
+                            <Mail className="mr-2 h-5 w-5" /> Contact Us
+                        </Link>
                     </Button>
                     <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg w-full sm:w-auto">
                         <a href="tel:+16059541144">

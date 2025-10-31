@@ -10,6 +10,7 @@ import WebDevelopment from "./pages/services/WebDevelopment";
 import AppDevelopment from "./pages/services/AppDevelopment";
 import SoftwareDevelopment from "./pages/services/SoftwareDevelopment";
 import MSP from "./pages/services/MSP";
+import { ContactPage } from "./pages/ContactPage";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/services/it-consultation" element={<ITConsultation />} />
           <Route path="/services/web-development" element={<WebDevelopment />} />
           <Route path="/services/app-development" element={<AppDevelopment />} />

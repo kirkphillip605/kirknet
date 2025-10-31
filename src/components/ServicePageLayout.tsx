@@ -18,7 +18,7 @@ export const ServicePageLayout = ({ title, imageUrl, children }: ServicePageLayo
             <img src="/kirknetlogo.png" alt="KirkNetworks Logo" className="h-12" />
           </Link>
           <Button asChild className="bg-blue-700 hover:bg-blue-800 text-white">
-            <a href="mailto:phillip@kirknetllc.com">Get a Quote</a>
+            <Link to="/contact">Get a Quote</Link>
           </Button>
         </div>
       </header>
@@ -50,9 +50,9 @@ export const ServicePageLayout = ({ title, imageUrl, children }: ServicePageLayo
                 <p className="mt-4 text-lg text-gray-600 mb-8">Let's discuss how our {title} services can benefit your business.</p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg w-full sm:w-auto">
-                        <a href="mailto:phillip@kirknetllc.com">
-                            <Mail className="mr-2 h-5 w-5" /> Email Us
-                        </a>
+                        <Link to="/contact">
+                            <Mail className="mr-2 h-5 w-5" /> Contact Us
+                        </Link>
                     </Button>
                     <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg w-full sm:w-auto">
                         <a href="tel:+16059541144">
