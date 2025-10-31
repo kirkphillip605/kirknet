@@ -313,7 +313,7 @@ Received: ${new Date().toLocaleString('en-US', {
       ],
     });
 
-    console.log(`Email sent successfully to phillipkirk7@gmail.com from ${email} (${name})`);
+    console.log(`Email sent successfully to recipient`);
 
     return res.status(200).setHeader('Access-Control-Allow-Origin', '*').json({ success: true });
   } catch (error) {
