@@ -10,24 +10,32 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Mailjet Configuration (Server-side)
-MAILJET_API_KEY=your_mailjet_api_key_here
-MAILJET_SECRET_KEY=your_mailjet_secret_key_here
+MAILJET_API_KEY=6bfb3ee22d4701f523cf721ac4ee103e
+MAILJET_SECRET_KEY=f4cd66bc579c44beb473412a365a0494
+MAILJET_SMTP_HOST=in-v3.mailjet.com
+MAILJET_SMTP_PORT=587
+MAILJET_FROM_EMAIL=noreply@kirknetllc.com
+MAILJET_FROM_NAME=Kirknet Message
 
 # reCAPTCHA Configuration
-VITE_RECAPTCHA_SITE_KEY=6Lf3LP0rAAAAAFHnqS2yz-gHwJI6jSzHhfV5mC6h
-RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key_here
+VITE_RECAPTCHA_SITE_KEY=6LfXrv0rAAAAAOfqIzbviKa3IdCKWwonkt4s-PBV
+RECAPTCHA_SECRET_KEY=6LfXrv0rAAAAAC0CxsszBb19jLexeuxNMgXaEFov
 ```
 
-### Getting Your API Keys
+### Contact Form
 
-1. **Mailjet**: 
-   - Sign up at [Mailjet](https://www.mailjet.com/)
-   - Navigate to Account Settings > API Key Management
-   - Copy your API Key and Secret Key
+The contact form sends notifications to `phillipkirk7@gmail.com` when visitors submit inquiries. The form includes:
+- Google reCAPTCHA v2 (invisible) protection against spam
+- Professional HTML email formatting with responsive design
+- Field validation for name, email, phone, service selection, and message
+- Real-time form validation using React Hook Form and Zod
 
-2. **reCAPTCHA**:
-   - The site key is already configured: `6Lf3LP0rAAAAAFHnqS2yz-gHwJI6jSzHhfV5mC6h`
-   - Get the secret key from [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin)
+### API Configuration
+
+- **Email Service**: Mailjet (using node-mailjet package)
+- **Sender Email**: noreply@kirknetllc.com
+- **Recipient Email**: phillipkirk7@gmail.com
+- **reCAPTCHA**: Google reCAPTCHA v2 Invisible
 
 ### Deployment
 
