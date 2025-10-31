@@ -12,22 +12,32 @@ Create a `.env` file in the root directory with the following variables:
 # Mailjet Configuration (Server-side)
 MAILJET_API_KEY=your_mailjet_api_key_here
 MAILJET_SECRET_KEY=your_mailjet_secret_key_here
+MAILJET_SMTP_HOST=in-v3.mailjet.com
+MAILJET_SMTP_PORT=587
+MAILJET_FROM_EMAIL=noreply@kirknetllc.com
+MAILJET_FROM_NAME=Kirknet Message
 
 # reCAPTCHA Configuration
-VITE_RECAPTCHA_SITE_KEY=6Lf3LP0rAAAAAFHnqS2yz-gHwJI6jSzHhfV5mC6h
+VITE_RECAPTCHA_SITE_KEY=your_recaptcha_site_key_here
 RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key_here
 ```
 
-### Getting Your API Keys
+**Note**: Replace the placeholder values with your actual credentials. Never commit the `.env` file to version control.
 
-1. **Mailjet**: 
-   - Sign up at [Mailjet](https://www.mailjet.com/)
-   - Navigate to Account Settings > API Key Management
-   - Copy your API Key and Secret Key
+### Contact Form
 
-2. **reCAPTCHA**:
-   - The site key is already configured: `6Lf3LP0rAAAAAFHnqS2yz-gHwJI6jSzHhfV5mC6h`
-   - Get the secret key from [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin)
+The contact form sends notifications to the configured recipient email when visitors submit inquiries. The form includes:
+- Google reCAPTCHA v2 (invisible) protection against spam
+- Professional HTML email formatting with responsive design
+- Field validation for name, email, phone, service selection, and message
+- Real-time form validation using React Hook Form and Zod
+
+### API Configuration
+
+- **Email Service**: Mailjet (using node-mailjet package)
+- **Sender Email**: noreply@kirknetllc.com
+- **Recipient Email**: Configure via the API endpoint
+- **reCAPTCHA**: Google reCAPTCHA v2 Invisible
 
 ### Deployment
 

@@ -41,6 +41,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Validate field lengths
+    if (name.length < 2 || name.length > 100) {
+      return res.status(400).json({ error: 'Name must be between 2 and 100 characters' });
+    }
+
+    if (message.length < 10 || message.length > 5000) {
+      return res.status(400).json({ error: 'Message must be between 10 and 5000 characters' });
+    }
+
+    if (businessName && businessName.length > 100) {
+      return res.status(400).json({ error: 'Business name must be less than 100 characters' });
+    }
+
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -66,8 +79,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const recaptchaData = await recaptchaResponse.json();
 
     if (!recaptchaData.success) {
-      return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+      console.error('reCAPTCHA verification failed:', recaptchaData['error-codes']);
+      return res.status(400).json({ 
+        error: 'reCAPTCHA verification failed. Please try again.' 
+      });
     }
+
+    // Log successful verification for monitoring
+    console.log('reCAPTCHA verification successful');
 
     // Validate environment variables
     const mailjetApiKey = process.env.MAILJET_API_KEY;
@@ -100,41 +119,201 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         {
           From: {
             Email: 'noreply@kirknetllc.com',
-            Name: 'Kirknet Contact Form',
+            Name: 'Kirknet Message',
           },
           To: [
             {
-              Email: 'phillip@kirknetllc.com',
+              Email: 'phillipkirk7@gmail.com',
               Name: 'Phillip Kirk',
             },
           ],
-          Subject: `New Contact Form Inquiry: ${serviceName}`,
+          Subject: `🔔 New Kirknet Contact Inquiry - ${serviceName} - ${name}`,
           TextPart: `
-You have a new message from your website contact form.
+═══════════════════════════════════════════════════════
+NEW CONTACT FORM INQUIRY
+═══════════════════════════════════════════════════════
 
-Name: ${name}
-Business: ${businessName || 'N/A'}
-Email: ${email}
-Phone: ${phone}
-Service of Interest: ${serviceName}
+CONTACT INFORMATION
+-------------------
+Name:     ${name}
+Business: ${businessName || 'Not provided'}
+Email:    ${email}
+Phone:    ${phone}
 
-Message:
+SERVICE OF INTEREST
+-------------------
+${serviceName}
+
+MESSAGE
+-------
 ${message}
+
+═══════════════════════════════════════════════════════
+Received: ${new Date().toLocaleString('en-US', { 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric', 
+  hour: '2-digit', 
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
           `,
           HTMLPart: `
-<h3>New Contact Form Inquiry</h3>
-<p><strong>Name:</strong> ${escapeHtml(name)}</p>
-<p><strong>Business:</strong> ${escapeHtml(businessName || 'N/A')}</p>
-<p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
-<p><strong>Phone:</strong> <a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></p>
-<p><strong>Service of Interest:</strong> ${escapeHtml(serviceName)}</p>
-<hr>
-<p><strong>Message:</strong></p>
-<p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .email-header {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 30px 20px;
+      text-align: center;
+    }
+    .email-header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .email-body {
+      padding: 30px 20px;
+    }
+    .info-row {
+      background-color: #f9fafb;
+      padding: 15px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border-left: 4px solid #3b82f6;
+    }
+    .info-label {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 4px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .info-value {
+      color: #333;
+      font-size: 16px;
+      word-break: break-word;
+    }
+    .info-value a {
+      color: #3b82f6;
+      text-decoration: none;
+    }
+    .info-value a:hover {
+      text-decoration: underline;
+    }
+    .message-section {
+      background-color: #f9fafb;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .message-label {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .message-content {
+      color: #333;
+      font-size: 15px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .email-footer {
+      background-color: #f9fafb;
+      padding: 20px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+      margin: 25px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="email-header">
+      <h1>🔔 New Contact Form Inquiry</h1>
+    </div>
+    <div class="email-body">
+      <div class="info-row">
+        <div class="info-label">Full Name</div>
+        <div class="info-value">${escapeHtml(name)}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Business Name</div>
+        <div class="info-value">${escapeHtml(businessName || 'Not provided')}</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Email Address</div>
+        <div class="info-value">
+          <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Phone Number</div>
+        <div class="info-value">
+          <a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Service of Interest</div>
+        <div class="info-value">${escapeHtml(serviceName)}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="message-section">
+        <div class="message-label">📝 Message</div>
+        <div class="message-content">${escapeHtml(message)}</div>
+      </div>
+    </div>
+    <div class="email-footer">
+      This message was sent from the Kirknet contact form at ${new Date().toLocaleString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })}
+    </div>
+  </div>
+</body>
+</html>
           `,
         },
       ],
     });
+
+    console.log(`Email sent successfully to recipient`);
 
     return res.status(200).setHeader('Access-Control-Allow-Origin', '*').json({ success: true });
   } catch (error) {
