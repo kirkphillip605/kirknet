@@ -38,6 +38,12 @@ const formSchema = z.object({
 
 export function ContactPage() {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+  if (!recaptchaSiteKey) {
+    console.error('VITE_RECAPTCHA_SITE_KEY is not defined');
+  }
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -211,11 +217,13 @@ export function ContactPage() {
                         )}
                     />
                     <div className="flex justify-center">
-                        <ReCAPTCHA
-                            ref={recaptchaRef}
-                            sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
-                            size="invisible"
-                        />
+                        {recaptchaSiteKey && (
+                            <ReCAPTCHA
+                                ref={recaptchaRef}
+                                sitekey={recaptchaSiteKey}
+                                size="invisible"
+                            />
+                        )}
                     </div>
                     <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 text-white" size="lg">
                         Send Message
