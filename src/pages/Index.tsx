@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, Globe, Server, Smartphone } from "lucide-react";
+import { Code, Globe, Server, Smartphone, Mail, Phone } from "lucide-react";
 
 const Index = () => {
   return (
@@ -12,9 +12,12 @@ const Index = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#services" className="text-gray-600 hover:text-blue-700 transition-colors">Services</a>
             <a href="#about" className="text-gray-600 hover:text-blue-700 transition-colors">About</a>
+            <a href="#service-area" className="text-gray-600 hover:text-blue-700 transition-colors">Service Area</a>
             <a href="#contact" className="text-gray-600 hover:text-blue-700 transition-colors">Contact</a>
           </nav>
-          <Button className="hidden md:block bg-blue-700 hover:bg-blue-800 text-white">Get a Quote</Button>
+          <Button asChild className="hidden md:block bg-blue-700 hover:bg-blue-800 text-white">
+            <a href="mailto:phillip@kirknetllc.com">Get a Quote</a>
+          </Button>
           {/* A mobile menu could be added here in the future if you'd like! */}
         </div>
       </header>
@@ -30,8 +33,8 @@ const Index = () => {
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               KirkNetworks provides expert IT consultation, custom software solutions, and comprehensive development services to help your business thrive.
             </p>
-            <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg">
-              Request a Free Consultation
+            <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg">
+              <a href="mailto:phillip@kirknetllc.com">Request a Free Consultation</a>
             </Button>
           </div>
         </section>
@@ -102,21 +105,67 @@ const Index = () => {
             </div>
         </section>
 
+        {/* Service Area Section */}
+        <section id="service-area" className="py-20 md:py-24">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Proudly Serving Our Region</h2>
+                <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                    We provide on-site and remote IT services to Watertown and surrounding communities within a 100-mile radius.
+                </p>
+                <div className="mt-8 text-gray-700 max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-4">
+                    <div>
+                        <h3 className="font-semibold text-lg text-gray-800">South Dakota</h3>
+                        <p>Aberdeen, Brookings, Huron, Milbank, Sisseton, Clark</p>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-lg text-gray-800">Minnesota</h3>
+                        <p>Marshall, Montevideo, Ortonville</p>
+                    </div>
+                    <div>
+                        <h3 className="font-semibold text-lg text-gray-800">North Dakota</h3>
+                        <p>Wahpeton</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         {/* Contact Section */}
-        <section id="contact" className="py-20 md:py-24">
+        <section id="contact" className="py-20 md:py-24 bg-gray-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Ready to start a project?</h2>
                 <p className="mt-4 text-lg text-gray-600 mb-8">Let's talk about how we can help you achieve your goals.</p>
-                <Button size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg">Contact Us</Button>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg w-full sm:w-auto">
+                        <a href="mailto:phillip@kirknetllc.com">
+                            <Mail className="mr-2 h-5 w-5" /> Email Us
+                        </a>
+                    </Button>
+                    <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg w-full sm:w-auto">
+                        <a href="tel:+16059541144">
+                            <Phone className="mr-2 h-5 w-5" /> Call (605) 954-1144
+                        </a>
+                    </Button>
+                </div>
             </div>
         </section>
       </main>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
-        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
-          <p>&copy; {new Date().getFullYear()} KirkNetworks, LLC. All Rights Reserved.</p>
-          <p className="text-sm text-gray-400 mt-2">Watertown, SD</p>
+        <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+            <h3 className="text-xl font-bold">KirkNetworks, LLC</h3>
+            <div className="mt-4 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6 text-gray-300">
+                <a href="mailto:phillip@kirknetllc.com" className="hover:text-white transition-colors flex items-center">
+                    <Mail className="mr-2 h-4 w-4" /> phillip@kirknetllc.com
+                </a>
+                <a href="tel:+16059541144" className="hover:text-white transition-colors flex items-center">
+                    <Phone className="mr-2 h-4 w-4" /> +1 (605) 954-1144
+                </a>
+            </div>
+            <div className="mt-8 border-t border-gray-700 pt-8">
+                <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} KirkNetworks, LLC. All Rights Reserved.</p>
+                <p className="text-sm text-gray-500 mt-1">Watertown, SD</p>
+            </div>
         </div>
       </footer>
     </div>
