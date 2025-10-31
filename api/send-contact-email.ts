@@ -41,6 +41,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Validate field lengths
+    if (name.length < 2 || name.length > 100) {
+      return res.status(400).json({ error: 'Name must be between 2 and 100 characters' });
+    }
+
+    if (message.length < 10 || message.length > 5000) {
+      return res.status(400).json({ error: 'Message must be between 10 and 5000 characters' });
+    }
+
+    if (businessName && businessName.length > 100) {
+      return res.status(400).json({ error: 'Business name must be less than 100 characters' });
+    }
+
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -66,8 +79,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const recaptchaData = await recaptchaResponse.json();
 
     if (!recaptchaData.success) {
-      return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+      console.error('reCAPTCHA verification failed:', recaptchaData['error-codes']);
+      return res.status(400).json({ 
+        error: 'reCAPTCHA verification failed. Please try again.' 
+      });
     }
+
+    // Log successful verification for monitoring
+    console.log('reCAPTCHA verification successful');
 
     // Validate environment variables
     const mailjetApiKey = process.env.MAILJET_API_KEY;
@@ -293,6 +312,8 @@ Received: ${new Date().toLocaleString('en-US', {
         },
       ],
     });
+
+    console.log(`Email sent successfully to phillipkirk7@gmail.com from ${email} (${name})`);
 
     return res.status(200).setHeader('Access-Control-Allow-Origin', '*').json({ success: true });
   } catch (error) {
