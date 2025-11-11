@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Mail, Phone, User, Building, MessageSquare, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/Footer";
 
 interface FormData {
   name: string;
@@ -213,6 +214,7 @@ export function ContactConfirmation() {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

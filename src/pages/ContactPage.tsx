@@ -27,6 +27,7 @@ import { ArrowLeft } from "lucide-react";
 import HCaptcha from "@hcaptcha/react-hcaptcha";
 import { useRef, useState } from "react";
 import { formatPhoneNumber, isValidPhoneNumber, isValidEmail } from "@/utils/validation";
+import { Footer } from "@/components/Footer";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }).max(100, { message: "Name must be less than 100 characters." }),
@@ -280,6 +281,7 @@ export function ContactPage() {
                 </Form>
             </div>
         </main>
+        <Footer />
     </div>
   );
 }

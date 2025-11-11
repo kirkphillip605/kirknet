@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - VITE_HCAPTCHA_SITE_KEY=${VITE_HCAPTCHA_SITE_KEY}
     container_name: kirknet
     restart: unless-stopped
     ports:
@@ -10,20 +12,6 @@ services:
       - "9620:9620"
     env_file:
       - .env
-    environment:
-      - NODE_ENV=production
-      - HOST=0.0.0.0
-      - API_PORT=9620
-      - MAILJET_API_KEY=${MAILJET_API_KEY}
-      - MAILJET_SECRET_KEY=${MAILJET_SECRET_KEY}
-      - MAILJET_FROM_EMAIL=${MAILJET_FROM_EMAIL:-noreply@kirknetllc.com}
-      - MAILJET_FROM_NAME=${MAILJET_FROM_NAME:-Kirknet Message}
-      - MAILJET_TO_EMAIL=${MAILJET_TO_EMAIL:-phillipkirk7@gmail.com}
-      - MAILJET_TO_NAME=${MAILJET_TO_NAME:-Phillip Kirk}
-      - VITE_HCAPTCHA_SITE_KEY=${VITE_HCAPTCHA_SITE_KEY}
-      - HCAPTCHA_SITE_KEY=${HCAPTCHA_SITE_KEY}
-      - HCAPTCHA_SECRET_KEY=${HCAPTCHA_SECRET_KEY}
-      - HOSTNAME=${HOSTNAME:-kirknetllc.com}
     networks:
       - kirknet-network
     healthcheck:
