@@ -44,9 +44,9 @@ app.post('/api/send-contact-email', async (req, res) => {
       return res.status(400).json({ error: 'Business name must be less than 100 characters' });
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Basic email validation (using a simpler regex to avoid ReDoS)
+    const emailRegex = /^[^\s@]+@[^\s@]+$/;
+    if (!emailRegex.test(email) || !email.includes('.')) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
 
