@@ -2,13 +2,18 @@ version: "3.9"
 
 services:
   kirknet:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: kirknet
     restart: unless-stopped
     ports:
+      # External : Internal
       - "9620:9620"
     environment:
       - NODE_ENV=production
+      - HOST=0.0.0.0
+      - API_PORT=9620
       - MAILJET_API_KEY=${MAILJET_API_KEY}
       - MAILJET_SECRET_KEY=${MAILJET_SECRET_KEY}
       - MAILJET_FROM_EMAIL=${MAILJET_FROM_EMAIL:-noreply@kirknetllc.com}
@@ -16,7 +21,6 @@ services:
       - MAILJET_TO_EMAIL=${MAILJET_TO_EMAIL:-phillipkirk7@gmail.com}
       - MAILJET_TO_NAME=${MAILJET_TO_NAME:-Phillip Kirk}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - API_PORT=9620
     networks:
       - kirknet-network
     healthcheck:
