@@ -31,8 +31,6 @@ This guide provides step-by-step instructions for deploying the Kirknet applicat
    Required variables:
    - `MAILJET_API_KEY` - Your Mailjet API key
    - `MAILJET_SECRET_KEY` - Your Mailjet secret key
-   - `RECAPTCHA_SECRET_KEY` - Your Google reCAPTCHA secret key
-   - `VITE_RECAPTCHA_SITE_KEY` - Your Google reCAPTCHA site key
 
 3. **Start the application**
    ```bash
@@ -57,8 +55,6 @@ This guide provides step-by-step instructions for deploying the Kirknet applicat
 |----------|-------------|---------|
 | `MAILJET_API_KEY` | Mailjet API key for sending emails | `abc123...` |
 | `MAILJET_SECRET_KEY` | Mailjet secret key | `xyz789...` |
-| `RECAPTCHA_SECRET_KEY` | Google reCAPTCHA secret key | `6Lc...` |
-| `VITE_RECAPTCHA_SITE_KEY` | Google reCAPTCHA site key | `6Lf...` |
 
 ### Optional Variables
 
@@ -233,8 +229,7 @@ docker compose logs api
 
 1. Verify Mailjet credentials in `.env`
 2. Check API logs: `docker compose logs api`
-3. Verify reCAPTCHA is configured correctly
-4. Ensure Mailjet account is active and verified
+3. Ensure Mailjet account is active and verified
 
 ### Frontend Not Loading
 
@@ -312,7 +307,7 @@ The application doesn't persist data in containers. All configuration is in `.en
 ## Security Best Practices
 
 1. **Never commit `.env` file** - It contains sensitive credentials
-2. **Use strong passwords** - For Mailjet and reCAPTCHA
+2. **Use strong passwords** - For Mailjet API keys
 3. **Keep Docker updated** - Regularly update Docker and images
 4. **Use SSL/TLS** - Always use HTTPS in production
 5. **Limit CORS origins** - Configure CORS to allow only your domain

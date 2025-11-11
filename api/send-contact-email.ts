@@ -14,19 +14,38 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-// CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+// Helper function to get allowed origin
+function getAllowedOrigin(requestOrigin: string | undefined): string {
+  const hostname = process.env.HOSTNAME || 'kirknetllc.com';
+  
+  // If no origin, allow (for server-side requests)
+  if (!requestOrigin) return '*';
+  
+  // Allow localhost for development
+  if (requestOrigin.includes('localhost') || requestOrigin.includes('127.0.0.1')) {
+    return requestOrigin;
+  }
+  
+  // Allow the configured hostname
+  if (requestOrigin.includes(hostname)) {
+    return requestOrigin;
+  }
+  
+  // Default to the configured hostname with https
+  return `https://${hostname}`;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const origin = req.headers.origin;
+  const allowedOrigin = getAllowedOrigin(origin);
+  
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).setHeader('Access-Control-Allow-Origin', '*')
+    return res.status(200)
+      .setHeader('Access-Control-Allow-Origin', allowedOrigin)
       .setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
       .setHeader('Access-Control-Allow-Headers', 'Content-Type')
+      .setHeader('Access-Control-Allow-Credentials', 'true')
       .end();
   }
 
@@ -288,11 +307,17 @@ Received: ${new Date().toLocaleString('en-US', {
 
     console.log(`Email sent successfully to recipient`);
 
-    return res.status(200).setHeader('Access-Control-Allow-Origin', '*').json({ success: true });
+    return res.status(200)
+      .setHeader('Access-Control-Allow-Origin', allowedOrigin)
+      .setHeader('Access-Control-Allow-Credentials', 'true')
+      .json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
-    return res.status(500).setHeader('Access-Control-Allow-Origin', '*').json({
-      error: error instanceof Error ? error.message : 'Failed to send email',
-    });
+    return res.status(500)
+      .setHeader('Access-Control-Allow-Origin', allowedOrigin)
+      .setHeader('Access-Control-Allow-Credentials', 'true')
+      .json({
+        error: error instanceof Error ? error.message : 'Failed to send email',
+      });
   }
 }
