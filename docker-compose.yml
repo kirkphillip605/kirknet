@@ -10,6 +10,8 @@ services:
     ports:
       # External : Internal
       - "9620:9620"
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0
