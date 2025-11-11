@@ -24,8 +24,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 import { showLoading, showSuccess, showError } from "@/utils/toast";
 import { ArrowLeft } from "lucide-react";
-import ReCAPTCHA from "react-google-recaptcha";
-import { useRef } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -37,13 +35,6 @@ const formSchema = z.object({
 });
 
 export function ContactPage() {
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-
-  if (!recaptchaSiteKey) {
-    console.error('VITE_RECAPTCHA_SITE_KEY is not defined');
-  }
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,25 +50,13 @@ export function ContactPage() {
     const toastId = showLoading("Sending your message...");
 
     try {
-      // Get reCAPTCHA token
-      const recaptchaToken = await recaptchaRef.current?.executeAsync();
-      recaptchaRef.current?.reset();
-
-      if (!recaptchaToken) {
-        showError("Please complete the reCAPTCHA verification.");
-        return;
-      }
-
-      // Send form data with reCAPTCHA token
+      // Send form data
       const response = await fetch("/api/send-contact-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...values,
-          recaptchaToken,
-        }),
+        body: JSON.stringify(values),
       });
 
       const data = await response.json();
@@ -216,15 +195,6 @@ export function ContactPage() {
                         </FormItem>
                         )}
                     />
-                    <div className="flex justify-center">
-                        {recaptchaSiteKey && (
-                            <ReCAPTCHA
-                                ref={recaptchaRef}
-                                sitekey={recaptchaSiteKey}
-                                size="invisible"
-                            />
-                        )}
-                    </div>
                     <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 text-white" size="lg">
                         Send Message
                     </Button>
