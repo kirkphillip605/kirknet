@@ -12,20 +12,50 @@ Create a `.env` file in the root directory with the following variables:
 # Mailjet Configuration (Server-side)
 MAILJET_API_KEY=your_mailjet_api_key_here
 MAILJET_SECRET_KEY=your_mailjet_secret_key_here
-MAILJET_SMTP_HOST=in-v3.mailjet.com
-MAILJET_SMTP_PORT=587
 MAILJET_FROM_EMAIL=noreply@kirknetllc.com
 MAILJET_FROM_NAME=Kirknet Message
+MAILJET_TO_EMAIL=phillipkirk7@gmail.com
+MAILJET_TO_NAME=Phillip Kirk
+
+# hCaptcha Configuration (for form security)
+HCAPTCHA_SITE_KEY=your_hcaptcha_site_key_here
+HCAPTCHA_SECRET_KEY=your_hcaptcha_secret_key_here
+
+# Frontend Environment Variables (must be prefixed with VITE_)
+VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key_here
 ```
 
-**Note**: Replace the placeholder values with your actual credentials. Never commit the `.env` file to version control.
+**Note**: 
+- Replace the placeholder values with your actual credentials
+- Get hCaptcha keys from https://www.hcaptcha.com/
+- The `VITE_` prefix is required for frontend environment variables in Vite
+- Never commit the `.env` file to version control
 
-### Contact Form
+### Contact Form - Production Ready Features
 
-The contact form sends notifications to the configured recipient email when visitors submit inquiries. The form includes:
-- Professional HTML email formatting with responsive design
-- Field validation for name, email, phone, service selection, and message
-- Real-time form validation using React Hook Form and Zod
+The contact form is fully secured and production-ready with the following features:
+
+**Security & Anti-Spam:**
+- ✅ hCaptcha integration to prevent automated bot submissions
+- ✅ Rate limiting (3 submissions per 5 minutes per IP address)
+- ✅ Hidden honeypot field to catch bots
+- ✅ Server-side input sanitization to prevent XSS attacks
+- ✅ Security logging for suspicious activity and rate limit violations
+
+**User Experience:**
+- ✅ Real-time phone number formatting to US standard: (XXX) XXX-XXXX
+- ✅ Enhanced email validation with robust regex pattern
+- ✅ Professional HTML email formatting with responsive design
+- ✅ Client-side and server-side validation
+- ✅ Clear, accessible error messages
+- ✅ Success confirmation page showing submission details
+- ✅ Smooth loading states and user feedback
+
+**Technical Implementation:**
+- ✅ React Hook Form with Zod schema validation
+- ✅ TypeScript for type safety
+- ✅ Environment variables for all configuration
+- ✅ CORS compliant for Vercel serverless deployment
 
 ### API Configuration
 
@@ -81,6 +111,11 @@ This application can be easily deployed to production using Docker. The Docker s
    MAILJET_FROM_NAME=Kirknet Message
    MAILJET_TO_EMAIL=phillipkirk7@gmail.com
    MAILJET_TO_NAME=Phillip Kirk
+   
+   # hCaptcha Configuration
+   HCAPTCHA_SITE_KEY=your_hcaptcha_site_key_here
+   HCAPTCHA_SECRET_KEY=your_hcaptcha_secret_key_here
+   VITE_HCAPTCHA_SITE_KEY=your_hcaptcha_site_key_here
    ```
 
 3. **Build and start the containers**
@@ -127,7 +162,11 @@ The following environment variables can be configured in your `.env` file:
 | `MAILJET_FROM_NAME` | Name to display as sender | Kirknet Message |
 | `MAILJET_TO_EMAIL` | Email address to receive contact form submissions | phillipkirk7@gmail.com |
 | `MAILJET_TO_NAME` | Name of the recipient | Phillip Kirk |
+| `HCAPTCHA_SITE_KEY` | Your hCaptcha site key (required) | - |
+| `HCAPTCHA_SECRET_KEY` | Your hCaptcha secret key (required) | - |
+| `VITE_HCAPTCHA_SITE_KEY` | Your hCaptcha site key for frontend (required) | - |
 | `API_PORT` | Port for the API server | 3001 |
+| `HOSTNAME` | Allowed hostname for CORS | kirknetllc.com |
 
 ### Production Deployment
 
@@ -169,5 +208,21 @@ The nginx configuration proxies `/api/*` requests to the API service, providing 
 ## Vercel Deployment
 
 When deploying to Vercel, make sure to add these environment variables in your Vercel project settings:
-- `MAILJET_API_KEY`
-- `MAILJET_SECRET_KEY`
+
+**Backend Environment Variables (API):**
+- `MAILJET_API_KEY` - Your Mailjet API key
+- `MAILJET_SECRET_KEY` - Your Mailjet secret key
+- `MAILJET_FROM_EMAIL` - Sender email address
+- `MAILJET_FROM_NAME` - Sender name
+- `MAILJET_TO_EMAIL` - Recipient email address
+- `MAILJET_TO_NAME` - Recipient name
+- `HCAPTCHA_SECRET_KEY` - Your hCaptcha secret key (server-side)
+- `HOSTNAME` - Your domain for CORS (optional)
+
+**Frontend Environment Variables:**
+- `VITE_HCAPTCHA_SITE_KEY` - Your hCaptcha site key (must be prefixed with `VITE_`)
+
+**Important Notes:**
+- Get hCaptcha keys from https://www.hcaptcha.com/ (free tier available)
+- The `VITE_` prefix is required for Vite to expose variables to the browser
+- Never expose secret keys (like `HCAPTCHA_SECRET_KEY`) to the frontend
