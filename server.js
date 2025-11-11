@@ -35,7 +35,7 @@ function escapeHtml(text) {
 // ====================
 app.post('/api/send-contact-email', async (req, res) => {
   try {
-    const { name, businessName, phone, email, service, message, recaptchaToken } = req.body;
+    const { name, businessName, phone, email, service, message } = req.body;
 
     // Validation
     if (!name || !phone || !email || !service || !message) {
@@ -58,25 +58,6 @@ app.post('/api/send-contact-email', async (req, res) => {
     if (!emailRegex.test(email) || !email.includes('.')) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
-
-    // Verify reCAPTCHA
-    if (!recaptchaToken) {
-      return res.status(400).json({ error: 'reCAPTCHA token is required' });
-    }
-
-    const recaptchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
-    });
-    const recaptchaData = await recaptchaResponse.json();
-
-    if (!recaptchaData.success) {
-      console.error('reCAPTCHA verification failed:', recaptchaData['error-codes']);
-      return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
-    }
-
-    console.log('reCAPTCHA verification successful');
 
     // Mailjet config
     const mailjetApiKey = process.env.MAILJET_API_KEY;

@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { name, businessName, phone, email, service, message, recaptchaToken } = req.body;
+    const { name, businessName, phone, email, service, message } = req.body;
 
     // Validate required fields
     if (!name || !phone || !email || !service || !message) {
@@ -59,34 +59,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: 'Invalid email address' });
     }
-
-    // Verify reCAPTCHA token
-    if (!recaptchaToken) {
-      return res.status(400).json({ error: 'reCAPTCHA token is required' });
-    }
-
-    const recaptchaResponse = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
-      }
-    );
-
-    const recaptchaData = await recaptchaResponse.json();
-
-    if (!recaptchaData.success) {
-      console.error('reCAPTCHA verification failed:', recaptchaData['error-codes']);
-      return res.status(400).json({ 
-        error: 'reCAPTCHA verification failed. Please try again.' 
-      });
-    }
-
-    // Log successful verification for monitoring
-    console.log('reCAPTCHA verification successful');
 
     // Validate environment variables
     const mailjetApiKey = process.env.MAILJET_API_KEY;
