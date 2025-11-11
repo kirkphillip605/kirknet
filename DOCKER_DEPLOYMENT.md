@@ -7,6 +7,8 @@ This guide provides step-by-step instructions for deploying the Kirknet applicat
 - Docker (version 20.10 or higher)
 - Docker Compose (v2.0 or higher)
 - Git
+- Mailjet account with API credentials
+- hCaptcha account with site and secret keys
 
 ## Quick Start
 
@@ -28,24 +30,29 @@ This guide provides step-by-step instructions for deploying the Kirknet applicat
    nano .env  # or use your preferred editor
    ```
    
-   Required variables:
-   - `MAILJET_API_KEY` - Your Mailjet API key
+   **Required variables:**
+   - `MAILJET_API_KEY` - Your Mailjet API key (from https://app.mailjet.com/account/apikeys)
    - `MAILJET_SECRET_KEY` - Your Mailjet secret key
+   - `VITE_HCAPTCHA_SITE_KEY` - Your hCaptcha site key (from https://dashboard.hcaptcha.com/)
+   - `HCAPTCHA_SECRET_KEY` - Your hCaptcha secret key
+   - `MAILJET_TO_EMAIL` - Email address to receive contact form submissions
 
 3. **Start the application**
    ```bash
-   docker compose up -d
+   docker compose up -d --build
    ```
+   
+   Note: The `--build` flag is important on first run to ensure environment variables are baked into the build.
 
 4. **Verify deployment**
    ```bash
    docker compose ps
-   docker compose logs -f
+   docker compose logs -f kirknet
    ```
 
 5. **Access the application**
    
-   Open your browser and navigate to: `http://localhost`
+   Open your browser and navigate to: `http://localhost:9620`
 
 ## Environment Variables
 
@@ -55,30 +62,35 @@ This guide provides step-by-step instructions for deploying the Kirknet applicat
 |----------|-------------|---------|
 | `MAILJET_API_KEY` | Mailjet API key for sending emails | `abc123...` |
 | `MAILJET_SECRET_KEY` | Mailjet secret key | `xyz789...` |
+| `VITE_HCAPTCHA_SITE_KEY` | hCaptcha site key (public, used at build time) | `10000000-ffff-ffff-ffff-000000000001` |
+| `HCAPTCHA_SECRET_KEY` | hCaptcha secret key (private, server-side verification) | `0x0000000000000000000000000000000000000000` |
+| `MAILJET_TO_EMAIL` | Email address to receive form submissions | `you@example.com` |
 
 ### Optional Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `NODE_ENV` | Environment mode | `production` |
+| `API_PORT` | Port for the application server | `9620` |
+| `HOST` | Host binding for the server | `0.0.0.0` |
+| `HOSTNAME` | Domain name for CORS | `kirknetllc.com` |
 | `MAILJET_FROM_EMAIL` | Email address to send from | `noreply@kirknetllc.com` |
 | `MAILJET_FROM_NAME` | Name to display as sender | `Kirknet Message` |
-| `MAILJET_TO_EMAIL` | Recipient email address | `phillipkirk7@gmail.com` |
-| `MAILJET_TO_NAME` | Name of the recipient | `Phillip Kirk` |
-| `API_PORT` | Port for the API server | `3001` |
+| `MAILJET_TO_NAME` | Name of the recipient | `Your Name` |
 
 ## Docker Commands
 
 ### Starting the Application
 
 ```bash
-# Start in detached mode
-docker compose up -d
-
-# Start with logs visible
-docker compose up
-
-# Rebuild and start
+# Start in detached mode (recommended for production)
 docker compose up -d --build
+
+# Start with logs visible (good for debugging)
+docker compose up --build
+
+# Rebuild and start (use when code or env vars change)
+docker compose up -d --build --force-recreate
 ```
 
 ### Stopping the Application
@@ -97,17 +109,14 @@ docker compose down -v
 ### Viewing Logs
 
 ```bash
-# View logs for all services
-docker compose logs -f
-
-# View logs for frontend only
-docker compose logs -f frontend
-
-# View logs for API only
-docker compose logs -f api
+# View logs for the service
+docker compose logs -f kirknet
 
 # View last 100 lines of logs
-docker compose logs --tail=100
+docker compose logs --tail=100 kirknet
+
+# View logs since a specific time
+docker compose logs --since 30m kirknet
 ```
 
 ### Checking Status
@@ -117,8 +126,10 @@ docker compose logs --tail=100
 docker compose ps
 
 # Check container health
-docker inspect kirknet-frontend --format='{{.State.Health.Status}}'
-docker inspect kirknet-api --format='{{.State.Health.Status}}'
+docker inspect kirknet --format='{{.State.Health.Status}}'
+
+# Test health endpoint
+curl http://localhost:9620/health
 ```
 
 ### Updating the Application
@@ -141,8 +152,8 @@ docker compose up -d frontend
 
 Ensure your server has:
 - Docker and Docker Compose installed
-- Ports 80 and 3001 open (or configure alternative ports)
-- SSL/TLS certificates (recommended)
+- Port 9620 open (or configure alternative port in .env)
+- SSL/TLS certificates (recommended for production)
 
 ### 2. Clone Repository
 
@@ -182,7 +193,7 @@ server {
     ssl_certificate_key /path/to/key.pem;
 
     location / {
-        proxy_pass http://localhost:80;
+        proxy_pass http://localhost:9620;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -195,19 +206,19 @@ server {
 
 ```
 yourdomain.com {
-    reverse_proxy localhost:80
+    reverse_proxy localhost:9620
 }
 ```
 
 ### 6. Configure Firewall
 
 ```bash
-# Allow HTTP and HTTPS
+# Allow HTTP and HTTPS (for reverse proxy)
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 
-# If not using a reverse proxy, allow API port
-sudo ufw allow 3001/tcp
+# If not using a reverse proxy, allow application port directly
+sudo ufw allow 9620/tcp
 ```
 
 ## Troubleshooting
@@ -216,39 +227,51 @@ sudo ufw allow 3001/tcp
 
 **Check logs:**
 ```bash
-docker compose logs frontend
-docker compose logs api
+docker compose logs kirknet
 ```
 
 **Common issues:**
-- Missing environment variables
-- Port conflicts (80 or 3001 already in use)
-- Invalid credentials
+- Missing required environment variables (especially `VITE_HCAPTCHA_SITE_KEY`)
+- Port conflicts (9620 already in use)
+- Invalid Mailjet or hCaptcha credentials
+- npm install failures during build
 
 ### Email Not Sending
 
 1. Verify Mailjet credentials in `.env`
-2. Check API logs: `docker compose logs api`
+2. Check server logs: `docker compose logs kirknet`
 3. Ensure Mailjet account is active and verified
+4. Check that `MAILJET_TO_EMAIL` is set correctly
+5. Test the contact form and check browser console for errors
+
+### hCaptcha Not Loading
+
+1. Verify `VITE_HCAPTCHA_SITE_KEY` is set in `.env`
+2. Rebuild the container: `docker compose up -d --build`
+3. Check browser console for errors
+4. Ensure the site key is valid and matches your domain
 
 ### Frontend Not Loading
 
 1. Check if container is running: `docker compose ps`
-2. Verify nginx configuration: `docker compose logs frontend`
-3. Check if port 80 is accessible from your browser
+2. Check server logs: `docker compose logs kirknet`
+3. Check if port 9620 is accessible from your browser
 4. If using a reverse proxy, verify proxy configuration
 
 ### API Connection Issues
 
-1. Verify both containers are on the same network:
+1. Check if application is healthy:
    ```bash
-   docker network inspect kirknet_kirknet-network
+   curl http://localhost:9620/health
    ```
-2. Check if API is healthy:
+2. Verify the container is running:
    ```bash
-   curl http://localhost:3001/health
+   docker compose ps
    ```
-3. Review nginx configuration for proxy settings
+3. Check network connectivity:
+   ```bash
+   docker network inspect kirknet-network
+   ```
 
 ### High CPU or Memory Usage
 
@@ -271,14 +294,14 @@ docker compose logs api
 
 ### Health Checks
 
-Both services include health checks:
+The service includes health checks:
 
 ```bash
-# Check frontend health
-curl http://localhost
+# Check application health
+curl http://localhost:9620/health
 
-# Check API health
-curl http://localhost:3001/health
+# Expected response:
+# {"status":"healthy"}
 ```
 
 ### Resource Monitoring
@@ -287,8 +310,8 @@ curl http://localhost:3001/health
 # Monitor resource usage
 docker stats
 
-# Monitor specific container
-docker stats kirknet-frontend
+# Monitor the kirknet container
+docker stats kirknet
 ```
 
 ## Backup and Restore
@@ -307,12 +330,20 @@ The application doesn't persist data in containers. All configuration is in `.en
 ## Security Best Practices
 
 1. **Never commit `.env` file** - It contains sensitive credentials
-2. **Use strong passwords** - For Mailjet API keys
+2. **Protect API keys** - Keep Mailjet and hCaptcha keys secure
 3. **Keep Docker updated** - Regularly update Docker and images
 4. **Use SSL/TLS** - Always use HTTPS in production
-5. **Limit CORS origins** - Configure CORS to allow only your domain
+5. **Configure HOSTNAME** - Set correct domain in `.env` for CORS
 6. **Regular updates** - Keep the application and dependencies updated
 7. **Monitor logs** - Regularly check logs for suspicious activity
+8. **Rebuild on env changes** - Always rebuild when changing `VITE_*` variables
+
+## Important Notes
+
+### Build-time vs Runtime Variables
+
+- **VITE_HCAPTCHA_SITE_KEY**: This is a build-time variable. It must be set in `.env` BEFORE building the Docker image. If you change this value, you MUST rebuild: `docker compose up -d --build`
+- **Other variables**: Runtime variables (MAILJET_*, HCAPTCHA_SECRET_KEY, etc.) can be changed in `.env` and applied with a simple restart: `docker compose restart kirknet`
 
 ## Support
 
