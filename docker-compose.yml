@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      target: api
+    container_name: kirknet-api
+    restart: unless-stopped
+    environment:
+      - MAILJET_API_KEY=${MAILJET_API_KEY}
+      - MAILJET_SECRET_KEY=${MAILJET_SECRET_KEY}
+      - MAILJET_FROM_EMAIL=${MAILJET_FROM_EMAIL:-noreply@kirknetllc.com}
+      - MAILJET_FROM_NAME=${MAILJET_FROM_NAME:-Kirknet Message}
+      - MAILJET_TO_EMAIL=${MAILJET_TO_EMAIL:-phillipkirk7@gmail.com}
+      - MAILJET_TO_NAME=${MAILJET_TO_NAME:-Phillip Kirk}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
+      - API_PORT=3001
+    ports:
+      - "3001:3001"
+    networks:
+      - kirknet-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: .
+      target: frontend
+    container_name: kirknet-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - kirknet-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  kirknet-network:
+    driver: bridge
