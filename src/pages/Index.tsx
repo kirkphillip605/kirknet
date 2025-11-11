@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Code, Globe, Server, Smartphone, Mail, Phone, ShieldCheck } from "lucide-react";
+import { Code, Globe, Server, Smartphone, Mail, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -158,40 +159,17 @@ const Index = () => {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Ready to start a project?</h2>
                 <p className="mt-4 text-lg text-gray-600 mb-8">Let's talk about how we can help you achieve your goals.</p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg w-full sm:w-auto">
-                        <Link to="/contact">
-                            <Mail className="mr-2 h-5 w-5" /> Contact Us
-                        </Link>
-                    </Button>
-                    <Button asChild variant="outline" size="lg" className="px-8 py-4 text-lg w-full sm:w-auto">
-                        <a href="tel:+16059541144">
-                            <Phone className="mr-2 h-5 w-5" /> Call (605) 954-1144
-                        </a>
-                    </Button>
-                </div>
+                <Button asChild size="lg" className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 text-lg">
+                    <Link to="/contact">
+                        <Mail className="mr-2 h-5 w-5" /> Contact Us
+                    </Link>
+                </Button>
             </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white">
-        <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
-            <h3 className="text-xl font-bold">KirkNetworks, LLC</h3>
-            <div className="mt-4 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6 text-gray-300">
-                <a href="mailto:phillip@kirknetllc.com" className="hover:text-white transition-colors flex items-center">
-                    <Mail className="mr-2 h-4 w-4" /> phillip@kirknetllc.com
-                </a>
-                <a href="tel:+16059541144" className="hover:text-white transition-colors flex items-center">
-                    <Phone className="mr-2 h-4 w-4" /> +1 (605) 954-1144
-                </a>
-            </div>
-            <div className="mt-8 border-t border-gray-700 pt-8">
-                <p className="text-sm text-gray-400">&copy; {new Date().getFullYear()} KirkNetworks, LLC. All Rights Reserved.</p>
-                <p className="text-sm text-gray-500 mt-1">Watertown, SD</p>
-            </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
