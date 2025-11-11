@@ -20,6 +20,9 @@ services:
       - MAILJET_FROM_NAME=${MAILJET_FROM_NAME:-Kirknet Message}
       - MAILJET_TO_EMAIL=${MAILJET_TO_EMAIL:-phillipkirk7@gmail.com}
       - MAILJET_TO_NAME=${MAILJET_TO_NAME:-Phillip Kirk}
+      - VITE_HCAPTCHA_SITE_KEY=${VITE_HCAPTCHA_SITE_KEY}
+      - HCAPTCHA_SITE_KEY=${HCAPTCHA_SITE_KEY}
+      - HCAPTCHA_SECRET_KEY=${HCAPTCHA_SECRET_KEY}
       - HOSTNAME=${HOSTNAME:-kirknetllc.com}
     networks:
       - kirknet-network
