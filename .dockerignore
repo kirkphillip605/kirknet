@@ -6,7 +6,6 @@ npm-debug.log
 dist
 .git
 .gitignore
-README.md
 .vscode
 .idea
 *.swp

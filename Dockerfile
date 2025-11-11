@@ -3,11 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
+# Install dependencies first (for better caching)
+COPY package.json package-lock.json* ./
+RUN npm install --legacy-peer-deps
 
 # Copy source code
 COPY . .
@@ -35,10 +33,10 @@ FROM node:20-alpine AS api
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json* ./
 
 # Install only production dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy server file
 COPY server.js ./
