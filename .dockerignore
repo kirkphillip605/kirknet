@@ -17,3 +17,26 @@ coverage
 *.log
 .cache
 .parcel-cache
+# Node + build system
+node_modules
+npm-debug.log
+
+# Vite cache
+dist
+.cache
+.vite
+
+# Git + configs
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Markdown and docs
+*.md
+*.MD
+
+# Misc
+.env
