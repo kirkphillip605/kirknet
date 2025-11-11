@@ -1,4 +1,7 @@
-FROM node:20-alpine AS app
+# ======================
+# Build + Runtime in One
+# ======================
+FROM node:20-alpine AS kirknet
 
 WORKDIR /app
 
@@ -6,11 +9,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
-# Copy full source and build the frontend
+# Copy the rest of the app and build the frontend
 COPY . .
 RUN npm run build
 
-# Expose your app port
+# The app will listen on port 9620
 EXPOSE 9620
 
+# Ensure Node listens on all interfaces (not just localhost)
+ENV HOST=0.0.0.0
+ENV PORT=9620
+
+# Start the server
 CMD ["node", "server.js"]
