@@ -16,7 +16,7 @@ export const ServicePageLayout = ({ title, imageUrl, children }: ServicePageLayo
       <header className="sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-20">
           <Link to="/">
-            <img src="/kirknetlogo.png" alt="KirkNetworks Logo" className="h-12" />
+            <img src="/kirknetlogo.png" alt="KirkNetworks Logo" className="h-[3.3rem]" />
           </Link>
           <Button asChild className="bg-blue-700 hover:bg-blue-800 text-white">
             <Link to="/contact">Get a Quote</Link>

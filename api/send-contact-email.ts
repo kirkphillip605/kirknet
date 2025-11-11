@@ -270,150 +270,344 @@ Received: ${new Date().toLocaleString('en-US', {
           `,
           HTMLPart: `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>New Contact Inquiry - Kirknet LLC</title>
   <style>
+    /* Reset and base styles */
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
       line-height: 1.6;
-      color: #333;
-      background-color: #f4f4f4;
+      color: #1f2937;
+      background-color: #f3f4f6;
       margin: 0;
       padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    /* Main container */
     .email-container {
       max-width: 600px;
-      margin: 20px auto;
+      margin: 30px auto;
       background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       overflow: hidden;
     }
+    /* Header styling */
     .email-header {
-      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
       color: #ffffff;
-      padding: 30px 20px;
+      padding: 40px 30px;
       text-align: center;
+      position: relative;
+    }
+    .email-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #60a5fa, #93c5fd, #60a5fa);
+    }
+    .company-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 8px;
     }
     .email-header h1 {
       margin: 0;
-      font-size: 24px;
-      font-weight: 600;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+    .header-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    /* Body content */
     .email-body {
-      padding: 30px 20px;
+      padding: 40px 30px;
     }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #dbeafe;
+    }
+    /* Information rows */
     .info-row {
-      background-color: #f9fafb;
-      padding: 15px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border-left: 4px solid #3b82f6;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      border-left: 4px solid #2563eb;
+      transition: transform 0.2s;
     }
     .info-label {
-      font-weight: 600;
+      font-weight: 700;
       color: #1e40af;
-      margin-bottom: 4px;
-      font-size: 12px;
+      margin-bottom: 6px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+    .info-icon {
+      margin-right: 6px;
+      font-size: 14px;
     }
     .info-value {
-      color: #333;
+      color: #1f2937;
       font-size: 16px;
+      font-weight: 500;
       word-break: break-word;
+      line-height: 1.5;
     }
     .info-value a {
-      color: #3b82f6;
+      color: #2563eb;
       text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
     }
     .info-value a:hover {
+      color: #1e40af;
       text-decoration: underline;
     }
+    /* Message section */
     .message-section {
-      background-color: #f9fafb;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 6px;
-      border: 1px solid #e5e7eb;
+      background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+      padding: 24px;
+      margin-top: 30px;
+      border-radius: 10px;
+      border: 2px solid #fde047;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     }
     .message-label {
-      font-weight: 600;
-      color: #1e40af;
-      margin-bottom: 10px;
+      font-weight: 700;
+      color: #854d0e;
+      margin-bottom: 12px;
       font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+    }
+    .message-icon {
+      margin-right: 8px;
+      font-size: 18px;
     }
     .message-content {
-      color: #333;
+      color: #422006;
       font-size: 15px;
-      line-height: 1.7;
+      line-height: 1.8;
       white-space: pre-wrap;
       word-wrap: break-word;
+      background-color: #ffffff;
+      padding: 16px;
+      border-radius: 6px;
+      border: 1px solid #fef3c7;
     }
-    .email-footer {
-      background-color: #f9fafb;
-      padding: 20px;
-      text-align: center;
-      color: #6b7280;
-      font-size: 12px;
-      border-top: 1px solid #e5e7eb;
-    }
+    /* Divider */
     .divider {
+      height: 2px;
+      background: linear-gradient(to right, transparent, #bfdbfe, transparent);
+      margin: 30px 0;
+    }
+    /* Footer styling */
+    .email-footer {
+      background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%);
+      padding: 30px;
+      border-top: 3px solid #e5e7eb;
+    }
+    .footer-content {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .footer-brand {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e40af;
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 15px;
+    }
+    .footer-links {
+      margin: 15px 0;
+    }
+    .footer-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 12px;
+      display: inline-block;
+    }
+    .footer-link:hover {
+      color: #1e40af;
+      text-decoration: underline;
+    }
+    .footer-divider {
       height: 1px;
-      background: linear-gradient(to right, transparent, #e5e7eb, transparent);
-      margin: 25px 0;
+      background: linear-gradient(to right, transparent, #d1d5db, transparent);
+      margin: 20px 0;
+    }
+    .footer-info {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .footer-timestamp {
+      color: #6b7280;
+      font-weight: 500;
+      margin-top: 8px;
+    }
+    .footer-legal {
+      margin-top: 15px;
+      font-size: 11px;
+      color: #9ca3af;
+      font-style: italic;
+    }
+    /* Responsive design */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        margin: 10px;
+        border-radius: 8px;
+      }
+      .email-header {
+        padding: 30px 20px;
+      }
+      .email-header h1 {
+        font-size: 24px;
+      }
+      .email-body {
+        padding: 25px 20px;
+      }
+      .email-footer {
+        padding: 20px;
+      }
+      .footer-link {
+        display: block;
+        margin: 8px 0;
+      }
     }
   </style>
 </head>
 <body>
   <div class="email-container">
+    <!-- Header -->
     <div class="email-header">
-      <h1>🔔 New Contact Form Inquiry</h1>
+      <span class="header-icon">🔔</span>
+      <div class="company-name">Kirknet LLC</div>
+      <h1>New Contact Inquiry</h1>
     </div>
+    
+    <!-- Body -->
     <div class="email-body">
+      <div class="section-title">Contact Information</div>
+      
       <div class="info-row">
-        <div class="info-label">Full Name</div>
+        <div class="info-label">
+          <span class="info-icon">👤</span>
+          Full Name
+        </div>
         <div class="info-value">${escapeHtml(sanitizedName)}</div>
       </div>
+      
       <div class="info-row">
-        <div class="info-label">Business Name</div>
+        <div class="info-label">
+          <span class="info-icon">🏢</span>
+          Business Name
+        </div>
         <div class="info-value">${escapeHtml(sanitizedBusinessName || 'Not provided')}</div>
       </div>
+      
       <div class="info-row">
-        <div class="info-label">Email Address</div>
+        <div class="info-label">
+          <span class="info-icon">📧</span>
+          Email Address
+        </div>
         <div class="info-value">
           <a href="mailto:${escapeHtml(sanitizedEmail)}">${escapeHtml(sanitizedEmail)}</a>
         </div>
       </div>
+      
       <div class="info-row">
-        <div class="info-label">Phone Number</div>
+        <div class="info-label">
+          <span class="info-icon">📱</span>
+          Phone Number
+        </div>
         <div class="info-value">
           <a href="tel:${escapeHtml(sanitizedPhone)}">${escapeHtml(sanitizedPhone)}</a>
         </div>
       </div>
+      
       <div class="info-row">
-        <div class="info-label">Service of Interest</div>
+        <div class="info-label">
+          <span class="info-icon">💼</span>
+          Service of Interest
+        </div>
         <div class="info-value">${escapeHtml(serviceName)}</div>
       </div>
+      
       <div class="divider"></div>
+      
+      <!-- Message Section -->
       <div class="message-section">
-        <div class="message-label">📝 Message</div>
+        <div class="message-label">
+          <span class="message-icon">📝</span>
+          Message
+        </div>
         <div class="message-content">${escapeHtml(sanitizedMessage)}</div>
       </div>
     </div>
+    
+    <!-- Footer -->
     <div class="email-footer">
-      This message was sent from the Kirknet contact form at ${new Date().toLocaleString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        timeZoneName: 'short'
-      })}
+      <div class="footer-content">
+        <div class="footer-brand">Kirknet LLC</div>
+        <div class="footer-tagline">Professional IT Solutions & Services</div>
+        
+        <div class="footer-links">
+          <a href="https://kirknetllc.com" class="footer-link">🌐 Visit Website</a>
+          <a href="mailto:phillipkirk7@gmail.com" class="footer-link">✉️ Email Us</a>
+        </div>
+      </div>
+      
+      <div class="footer-divider"></div>
+      
+      <div class="footer-info">
+        <div class="footer-timestamp">
+          📅 Received: ${new Date().toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            timeZoneName: 'short'
+          })}
+        </div>
+        <div class="footer-legal">
+          This is an automated message from your Kirknet contact form.<br>
+          Please respond promptly to maintain excellent customer service.
+        </div>
+      </div>
     </div>
   </div>
 </body>
