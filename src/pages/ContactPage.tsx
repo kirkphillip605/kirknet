@@ -24,17 +24,27 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
 import { showLoading, showSuccess, showError } from "@/utils/toast";
 import { ArrowLeft } from "lucide-react";
+import HCaptcha from "@hcaptcha/react-hcaptcha";
+import { useRef, useState } from "react";
+import { formatPhoneNumber, isValidPhoneNumber, isValidEmail } from "@/utils/validation";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  businessName: z.string().optional(),
-  phone: z.string().min(10, { message: "Please enter a valid phone number." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }).max(100, { message: "Name must be less than 100 characters." }),
+  businessName: z.string().max(100, { message: "Business name must be less than 100 characters." }).optional(),
+  phone: z.string()
+    .refine(isValidPhoneNumber, { message: "Please enter a complete 10-digit phone number." }),
+  email: z.string()
+    .refine(isValidEmail, { message: "Please enter a valid email address (e.g., user@example.com)." }),
   service: z.enum(["msp", "app-development", "web-development", "software-development", "it-consultation", "other"]),
-  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }).max(5000, { message: "Message must be less than 5000 characters." }),
+  honeypot: z.string().max(0, { message: "Invalid submission." }).optional(),
 });
 
 export function ContactPage() {
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<HCaptcha>(null);
+  const hCaptchaSiteKey = import.meta.env.VITE_HCAPTCHA_SITE_KEY || "";
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,30 +53,58 @@ export function ContactPage() {
       phone: "",
       email: "",
       message: "",
+      honeypot: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Validate hCaptcha token
+    if (!captchaToken) {
+      showError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
     const toastId = showLoading("Sending your message...");
 
     try {
-      // Send form data
+      // Send form data with captcha token
       const response = await fetch("/api/send-contact-email", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          captchaToken,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        // Reset captcha on error
+        captchaRef.current?.resetCaptcha();
+        setCaptchaToken(null);
         throw new Error(data.error || "Failed to send message");
       }
 
-      showSuccess("Message sent successfully! We'll be in touch soon.");
-      form.reset();
+      showSuccess("Message sent successfully! Redirecting to confirmation...");
+      
+      // Store form data in sessionStorage for confirmation page
+      sessionStorage.setItem('contactFormData', JSON.stringify({
+        name: values.name,
+        businessName: values.businessName,
+        phone: values.phone,
+        email: values.email,
+        service: values.service,
+        message: values.message,
+        timestamp: new Date().toISOString(),
+      }));
+      
+      // Navigate to confirmation page
+      setTimeout(() => {
+        window.location.href = '/contact/confirmation';
+      }, 1000);
     } catch (error) {
       showError("Failed to send message. Please try again.");
       console.error("Error sending message:", error);
@@ -145,7 +183,15 @@ export function ContactPage() {
                             <FormItem>
                                 <FormLabel>Phone Number</FormLabel>
                                 <FormControl>
-                                <Input placeholder="(555) 123-4567" {...field} />
+                                <Input 
+                                  placeholder="(555) 123-4567" 
+                                  {...field}
+                                  onChange={(e) => {
+                                    const formatted = formatPhoneNumber(e.target.value);
+                                    field.onChange(formatted);
+                                  }}
+                                  maxLength={14}
+                                />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -195,7 +241,39 @@ export function ContactPage() {
                         </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-800 text-white" size="lg">
+                    {/* Honeypot field - hidden from users, bots will fill it */}
+                    <FormField
+                        control={form.control}
+                        name="honeypot"
+                        render={({ field }) => (
+                        <FormItem className="hidden" aria-hidden="true">
+                            <FormControl>
+                            <Input 
+                                type="text" 
+                                tabIndex={-1}
+                                autoComplete="off"
+                                {...field} 
+                            />
+                            </FormControl>
+                        </FormItem>
+                        )}
+                    />
+                    {/* hCaptcha */}
+                    <div className="flex justify-center">
+                      <HCaptcha
+                        sitekey={hCaptchaSiteKey}
+                        onVerify={(token) => setCaptchaToken(token)}
+                        onExpire={() => setCaptchaToken(null)}
+                        onError={() => setCaptchaToken(null)}
+                        ref={captchaRef}
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-blue-700 hover:bg-blue-800 text-white" 
+                      size="lg"
+                      disabled={!captchaToken}
+                    >
                         Send Message
                     </Button>
                 </form>
