@@ -1,13 +1,14 @@
 version: "3.9"
 
 services:
-  api:
-    build:
-      context: .
-      target: api
-    container_name: kirknet-api
+  web:
+    build: .
+    container_name: kirknet
     restart: unless-stopped
+    ports:
+      - "9620:9620"
     environment:
+      - NODE_ENV=production
       - MAILJET_API_KEY=${MAILJET_API_KEY}
       - MAILJET_SECRET_KEY=${MAILJET_SECRET_KEY}
       - MAILJET_FROM_EMAIL=${MAILJET_FROM_EMAIL:-noreply@kirknetllc.com}
@@ -15,35 +16,11 @@ services:
       - MAILJET_TO_EMAIL=${MAILJET_TO_EMAIL:-phillipkirk7@gmail.com}
       - MAILJET_TO_NAME=${MAILJET_TO_NAME:-Phillip Kirk}
       - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY}
-      - API_PORT=3001
-    ports:
-      - "3001:3001"
+      - API_PORT=9620
     networks:
       - kirknet-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  frontend:
-    build:
-      context: .
-      target: frontend
-    container_name: kirknet-frontend
-    restart: unless-stopped
-    ports:
-      # Host port 9620 -> container port 80
-      - "9620:80"
-    depends_on:
-      - api
-    networks:
-      - kirknet-network
-    environment:
-      - NODE_ENV=production
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9620/health"]
       interval: 30s
       timeout: 10s
       retries: 3
